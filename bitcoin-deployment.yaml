@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.full.yml convert
+    kompose.version: 1.8.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: bitcoin
+  name: bitcoin
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: bitcoin
+    spec:
+      containers:
+      - env:
+        - name: PARAMS
+          value: -conf=/root/.bitcoin-config/bitcoin.conf
+        image: counterparty/bitcoin:latest
+        name: bitcoin
+        ports:
+        - containerPort: 8332
+        resources: {}
+        volumeMounts:
+        - mountPath: /root/.bitcoin-config
+          name: bitcoin-claim0
+        - mountPath: /root/.bitcoin/
+          name: bitcoin-data
+      restartPolicy: Always
+      volumes:
+      - name: bitcoin-claim0
+        persistentVolumeClaim:
+          claimName: bitcoin-claim0
+      - name: bitcoin-data
+        persistentVolumeClaim:
+          claimName: bitcoin-data
+status: {}

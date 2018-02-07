@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.full.yml convert
+    kompose.version: 1.8.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: counterblock-testnet
+  name: counterblock-testnet
+spec:
+  ports:
+  - name: "14100"
+    port: 14100
+    targetPort: 14100
+  - name: "14101"
+    port: 14101
+    targetPort: 14101
+  - name: "14102"
+    port: 14102
+    targetPort: 14102
+  selector:
+    io.kompose.service: counterblock-testnet
+status:
+  loadBalancer: {}

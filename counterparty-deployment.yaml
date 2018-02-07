@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.full.yml convert
+    kompose.version: 1.8.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: counterparty
+  name: counterparty
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: counterparty
+    spec:
+      containers:
+      - env:
+        - name: PARAMS
+          value: --config-file=/root/.config/counterparty/server.conf
+        image: counterparty/counterparty-server:latest
+        name: counterparty
+        ports:
+        - containerPort: 4000
+        resources: {}
+        volumeMounts:
+        - mountPath: /counterparty-lib
+          name: counterparty-claim0
+        - mountPath: /counterparty-cli
+          name: counterparty-claim1
+        - mountPath: /root/.config/counterparty
+          name: counterparty-claim2
+        - mountPath: /root/.local/share/counterparty
+          name: counterparty-data
+      restartPolicy: Always
+      volumes:
+      - name: counterparty-claim0
+        persistentVolumeClaim:
+          claimName: counterparty-claim0
+      - name: counterparty-claim1
+        persistentVolumeClaim:
+          claimName: counterparty-claim1
+      - name: counterparty-claim2
+        persistentVolumeClaim:
+          claimName: counterparty-claim2
+      - name: counterparty-data
+        persistentVolumeClaim:
+          claimName: counterparty-data
+status: {}

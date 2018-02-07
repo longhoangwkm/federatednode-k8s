@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.full.yml convert
+    kompose.version: 1.8.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: counterblock
+  name: counterblock
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: counterblock
+    spec:
+      containers:
+      - env:
+        - name: PARAMS
+          value: --config-file=/root/.config/counterblock/server.conf
+        image: counterparty/counterblock:latest
+        name: counterblock
+        ports:
+        - containerPort: 4100
+        resources: {}
+        volumeMounts:
+        - mountPath: /counterblock
+          name: counterblock-claim0
+        - mountPath: /root/.config/counterblock
+          name: counterblock-claim1
+        - mountPath: /root/.local/share/counterblock
+          name: counterblock-data
+      restartPolicy: Always
+      volumes:
+      - name: counterblock-claim0
+        persistentVolumeClaim:
+          claimName: counterblock-claim0
+      - name: counterblock-claim1
+        persistentVolumeClaim:
+          claimName: counterblock-claim1
+      - name: counterblock-data
+        persistentVolumeClaim:
+          claimName: counterblock-data
+status: {}

@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.full.yml convert
+    kompose.version: 1.8.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: armory-utxsvr-testnet
+  name: armory-utxsvr-testnet
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: armory-utxsvr-testnet
+    spec:
+      containers:
+      - env:
+        - name: BITCOIND_URL
+          value: http://rpc:rpc@bitcoin-testnet:18332
+        - name: PARAMS
+          value: --testnet
+        - name: RPC_HOST
+          value: 0.0.0.0
+        image: counterparty/armory-utxsvr:latest
+        name: armory-utxsvr-testnet
+        resources: {}
+        volumeMounts:
+        - mountPath: /armory-utxsvr
+          name: armory-utxsvr-testnet-claim0
+        - mountPath: /root/.armory
+          name: armory-data
+        - mountPath: /root/.bitcoin/
+          name: bitcoin-data
+      restartPolicy: Always
+      volumes:
+      - name: armory-utxsvr-testnet-claim0
+        persistentVolumeClaim:
+          claimName: armory-utxsvr-testnet-claim0
+      - name: armory-data
+        persistentVolumeClaim:
+          claimName: armory-data
+      - name: bitcoin-data
+        persistentVolumeClaim:
+          claimName: bitcoin-data
+status: {}
